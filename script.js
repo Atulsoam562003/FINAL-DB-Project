@@ -6,7 +6,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
 }));
-app.use(express.static('./public/'))
+app.use(express.static('./docs/'))
 app.set('view engine', 'ejs')
 
   con.connect(function(err) {
@@ -16,17 +16,50 @@ app.set('view engine', 'ejs')
 let finalProps = []
 
 app.get('/buy' , (req , res) => {
-  res.sendFile(__dirname + '/public/buy.html')
+  res.sendFile(__dirname + '/docs/buy.html')
 });
 
 app.get('/rent' , (req , res) => {
-  res.sendFile(__dirname  + '/public/rent.html');
+  res.sendFile(__dirname  + '/docs/rent.html');
+});
+
+app.get(['/auth/sell', '/auth/rent'] , (req , res) => {
+  res.sendFile(__dirname  + '/docs/auth.html');
 });
 
 app.get('/sell' , (req , res) => {
-  res.sendFile(__dirname + '/public/sell.html');
+  res.sendFile(__dirname + '/docs/sell.html');
 });
 
+app.post('/auth/rent' , (req , res) => {
+  let user = req.body.loginUser;
+  let password = req.body.loginPassword;
+
+  con.query("SELECT * FROM Agent", (err, result, fields) => {
+    if (err) throw err;
+    result.forEach((agent) => {
+        if (agent.Username === user && agent.Password === password) {
+          res.redirect('/rent');
+          return;
+        }
+      });
+    });
+});
+
+app.post('/auth/sell' , (req , res) => {
+  let user = req.body.loginUser;
+  let password = req.body.loginPassword;
+
+  con.query("SELECT * FROM Agent", (err, result, fields) => {
+    if (err) throw err;
+    result.forEach((agent) => {
+        if (agent.Username === user && agent.Password === password) {
+          res.redirect('/sell');
+          return;
+        }
+      });
+    });
+});
 
 app.post('/sell' , (req ,res) => {
   let address = req.body.address;
@@ -54,11 +87,11 @@ app.post('/sell' , (req ,res) => {
 app.get('/slider' , (req ,res) => {
   let linkClicked = req.query.link;
   console.log(linkClicked);
-  res.render(__dirname + '/public/slider' , {variable : linkClicked});
+  res.render(__dirname + '/docs/slider' , {variable : linkClicked});
 });
 
 app.get('/success' , (req ,res) => {
-  res.sendFile(__dirname + '/public/successf.html');
+  res.sendFile(__dirname + '/docs/successf.html');
 });
 
 app.post('/buy', (req, res) => {
@@ -76,7 +109,7 @@ app.post('/buy', (req, res) => {
       });
       res.redirect('/property');
       });
-    });
+});
 
     app.post('/rent' , (req ,res) => {
       let address = req.body.address;
@@ -102,7 +135,7 @@ app.post('/buy', (req, res) => {
 });
 
 app.get('/success' , (req ,res) => {
-  res.sendFile(__dirname + '/public/successf.html');
+  res.sendFile(__dirname + '/docs/successf.html');
 });
 
 app.get('/enquiry' , (req , res) => {
@@ -121,7 +154,7 @@ app.get('/enquiry' , (req , res) => {
       };
       final.push(obj);
     });
-  res.render(__dirname + '/public/enquiry.ejs' , {agents : final});
+  res.render(__dirname + '/docs/enquiry.ejs' , {agents : final});
   });
 });
 
@@ -129,6 +162,7 @@ app.get('/property', (req, res) => {
 
   let sql = `SELECT property.p_id,
   Agent.name AS agent_name,
+  Agent.Email AS email ,
   property.city,
   property.state,
                       property.p_area,
@@ -149,6 +183,7 @@ app.get('/property', (req, res) => {
         if (finalProps.includes(element.p_id)) {
           let obj = {
             name: element.agent_name,
+            email : element.email ,
             city: element.city,
             state: element.state,
             area: element.p_area,
@@ -161,7 +196,7 @@ app.get('/property', (req, res) => {
           final.push(obj);
         }
       });
-      res.render(__dirname + '/public/ava.ejs', {
+      res.render(__dirname + '/docs/ava.ejs', {
         apartments: final
       })
     });

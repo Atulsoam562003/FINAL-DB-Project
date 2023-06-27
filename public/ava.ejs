@@ -6,15 +6,15 @@
     <link rel="shortcut icon" href="favicon.svg" type="image/svg+xml">
     <style>
         :root {
-			--ff-nunito-sans: "Nunito Sans", sans-serif;
-			--ff-poppins: "Poppins", sans-serif;
-		}
+            --ff-nunito-sans: "Nunito Sans", sans-serif;
+            --ff-poppins: "Poppins", sans-serif;
+        }
 
-		html {
-			font-family: var(--ff-nunito-sans);
-			scroll-behavior: smooth;
+        html {
+            font-family: var(--ff-nunito-sans);
+            scroll-behavior: smooth;
             font-family: var(--ff-poppins);
-		}
+        }
 
         body {
             font-family: Arial, sans-serif;
@@ -50,6 +50,9 @@
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
+        #email:hover {
+			cursor: pointer;
+		}
     </style>
 </head>
 
@@ -60,6 +63,7 @@
             <thead>
                 <tr>
                     <th>Agent Name</th>
+                    <th>Email</th>
                     <th>City, State</th>
                     <th>Area</th>
                     <th>Price</th>
@@ -71,10 +75,11 @@
             </thead>
             <tbody>
                 <% for (var i=0; i < apartments.length; i++) { %>
-                    <tr>
+                    <tr onclick="window.location.href='mailto:<%= apartments[i].email %>';">
                         <td>
                             <%= apartments[i].name %>
                         </td>
+                        <td id="email"><%= apartments[i].email %></td>
                         <td>
                             <%= apartments[i].city %>, <%= apartments[i].state %>
                         </td>
